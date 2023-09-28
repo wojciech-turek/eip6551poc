@@ -8,29 +8,23 @@ const routes = [
     name: 'Home',
     href: '/',
   },
-  {
-    name: 'Account',
-    href: '/account',
-  },
-  {
-    name: 'Register',
-    href: '/register',
-  },
 ];
 
 const NavBar = () => {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
-
+  const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<`0x${string}` | null>(
     null
   );
 
   useEffect(() => {
     if (address) {
+      setWalletConnected(true);
       setWalletAddress(address);
     } else {
+      setWalletConnected(false);
       setWalletAddress(null);
     }
   }, [address]);
@@ -67,7 +61,9 @@ const NavBar = () => {
             );
           })}
           <button
-            onClick={isConnected ? handleDisconnectWallet : handleConnectWallet}
+            onClick={
+              walletConnected ? handleDisconnectWallet : handleConnectWallet
+            }
             className="bg-gray-900 text-white px-3 py-2 ml-4 rounded-md text-sm font-medium"
           >
             {walletAddress ? truncateAddress(walletAddress) : 'Connect Wallet'}

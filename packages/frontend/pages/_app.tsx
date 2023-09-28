@@ -1,27 +1,26 @@
-import Layout from "@/components/Layout";
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { polygonMumbai } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import Layout from '@/components/Layout';
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import { polygonMumbai } from 'wagmi/chains';
+import { WagmiConfig, createConfig } from 'wagmi';
+import { createPublicClient, http } from 'viem';
+import { DndContext } from '@dnd-kit/core';
 
-const { chains, provider } = configureChains(
-  [polygonMumbai],
-  [publicProvider()]
-);
-
-const client = createClient({
-  connectors: [new InjectedConnector({ chains })],
+const config = createConfig({
   autoConnect: true,
-  provider,
+  publicClient: createPublicClient({
+    chain: polygonMumbai,
+    transport: http(),
+  }),
 });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig config={config}>
       <Layout>
-        <Component {...pageProps} />
+        <DndContext>
+          <Component {...pageProps} />
+        </DndContext>
       </Layout>
     </WagmiConfig>
   );
