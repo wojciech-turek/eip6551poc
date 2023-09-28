@@ -17,13 +17,13 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
           key={avatar.id}
         >
           {/* absolute position top right id */}
-          <div className="absolute top-0 right-0 text-sm text-gray-600 p-2">
+          <div className="relative  text-sm text-gray-600 p-1ś">
             ID: {avatar.id}
           </div>
           <img
             width={200}
             height={200}
-            className="object-cover rounded-full"
+            className="object-cover"
             src={avatar.image}
             alt="avatar"
           />
@@ -49,7 +49,7 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
             <div className="mt-1 border-t border-gray-200"></div>
             <div className="mt-1 text-sm text-gray-500 py-4">Items Owned</div>
 
-            <Droppable id="avatar" avatar={avatar}>
+            <Droppable id={avatar.id} avatar={avatar}>
               {avatar.itemsOwned.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4 py-8 px-2">
                   {avatar.itemsOwned?.map((item) => (
