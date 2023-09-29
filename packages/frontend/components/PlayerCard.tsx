@@ -5,6 +5,7 @@ import { CopyClipboard } from './CopyClipboard';
 import { useAccount } from 'wagmi';
 import { Droppable } from './Droppable';
 import { Draggable } from './Draggable';
+import { classNames } from '@/utils/classNames';
 
 const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
   const { address } = useAccount();
@@ -13,7 +14,10 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
     <>
       {avatars.map((avatar) => (
         <div
-          className="border border-gray-200 rounded-lg p-4 relative"
+          className={classNames(
+            avatar.owner === address ? 'bg-orange-100' : 'bg-white',
+            'border border-gray-200 rounded-lg p-4 relative'
+          )}
           key={avatar.id}
         >
           {/* absolute position top right id */}
@@ -23,7 +27,7 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
           <img
             width={200}
             height={200}
-            className="object-cover"
+            className="object-cover w-full"
             src={avatar.image}
             alt="avatar"
           />

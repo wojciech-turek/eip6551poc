@@ -1420,3 +1420,212 @@ export const AccountContractABI = [
     type: 'receive',
   },
 ];
+
+export const BattleContractABI = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'tokenId1',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'tokenId2',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'winner',
+        type: 'uint256',
+      },
+    ],
+    name: 'BattleEnded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'tokenId1',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'tokenId2',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'damage1',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'damage2',
+        type: 'uint256',
+      },
+    ],
+    name: 'DamageRound',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'accountContract',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'avatarContract',
+    outputs: [
+      {
+        internalType: 'contract ERC721Burnable',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId1',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId2',
+        type: 'uint256',
+      },
+    ],
+    name: 'battle',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'equipmentContract',
+    outputs: [
+      {
+        internalType: 'contract IBGEquipment',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_avatarContract',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_equipmentContract',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_accountContract',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_registryContract',
+        type: 'address',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'registryContract',
+    outputs: [
+      {
+        internalType: 'contract IERC6551Registry',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_accountContract',
+        type: 'address',
+      },
+    ],
+    name: 'setAccountContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_avatarContract',
+        type: 'address',
+      },
+    ],
+    name: 'setAvatarContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_equipmentContract',
+        type: 'address',
+      },
+    ],
+    name: 'setEquipmentContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_registryContract',
+        type: 'address',
+      },
+    ],
+    name: 'setRegistryContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];

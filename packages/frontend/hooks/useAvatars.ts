@@ -107,6 +107,7 @@ const useAvatars = () => {
           tokenURI: string;
         };
       };
+      if (!createdEvent) return;
       setAvatars((prev) => [
         ...prev,
         {
@@ -128,7 +129,6 @@ const useAvatars = () => {
     ...equipmentContract,
     eventName: 'EquipmentTransferred',
     listener(log) {
-      console.log(log);
       // @ts-ignore
       const transferEvent = log.find(
         // @ts-ignore
@@ -142,6 +142,7 @@ const useAvatars = () => {
           name: string;
         };
       };
+      if (!transferEvent) return;
       setAvatars((prev) => {
         const avatar = prev.find(
           (a) =>
@@ -179,15 +180,48 @@ const useAvatars = () => {
     },
   });
 
-  const transferAvatar = (to: string, id: number) => {};
+  const { writeAsync: transfer } = useContractWrite({
+    ...avatarContract,
+    functionName: 'safeTransferFrom',
+  });
 
-  const transferItem = (from: string, to: string, itemId: number) => {};
+  const transferAvatar = (to: string, id: number) => {
+    if (!address) return;
+    if (!transfer) return;
+    transfer({
+      args: [address, to, id],
+    });
+  };
+
+  const { writeAsync: transferItem } = useContractWrite({
+    ...accountContract,
+    address: (activeAvatar?.account ?? '') as `0x${string}`,
+    functionName: 'execute',
+  });
+
+  const transferEquipment = (from: string, to: string, itemId: number) => {
+    if (!address) return;
+    if (!transferItem) return;
+    transferItem({
+      args: [
+        equipmentContractAddress,
+        0,
+        encodeFunctionData({
+          abi: EqupimentContractABI,
+          args: [from, to, itemId],
+          functionName: 'safeTransferFrom',
+        }),
+        0,
+      ],
+    });
+  };
 
   return {
     avatars,
     createAvatar,
     setActiveAvatar,
     unequipItem,
+    transferEquipment,
     transferAvatar,
   };
 };

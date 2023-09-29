@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "./interfaces/IERC6551Executable.sol";
-import "./interfaces/IERC6551Registry.sol";
-import "./interfaces/IBGEquipment.sol";
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
+import './interfaces/IERC6551Executable.sol';
+import './interfaces/IERC6551Registry.sol';
+import './interfaces/IBGEquipment.sol';
 
 contract Battle {
     ERC721Burnable public avatarContract;
@@ -12,23 +12,50 @@ contract Battle {
     address public accountContract;
     IERC6551Registry public registryContract;
 
-    event BattleEnded(uint256 indexed tokenId1, uint256 indexed tokenId2, uint256 indexed winner);
-    event DamageRound(uint256 indexed tokenId1, uint256 indexed tokenId2, uint256 damage1, uint256 damage2);
+    event BattleEnded(
+        uint256 indexed tokenId1,
+        uint256 indexed tokenId2,
+        uint256 indexed winner
+    );
+    event DamageRound(
+        uint256 indexed tokenId1,
+        uint256 indexed tokenId2,
+        uint256 damage1,
+        uint256 damage2
+    );
 
-    constructor(
+    function initialize(
         address _avatarContract,
         address _equipmentContract,
         address _accountContract,
         address _registryContract
-    ) {
+    ) external {
         avatarContract = ERC721Burnable(_avatarContract);
         equipmentContract = IBGEquipment(_equipmentContract);
         accountContract = _accountContract;
         registryContract = IERC6551Registry(_registryContract);
     }
 
+    function setAvatarContract(address _avatarContract) external {
+        avatarContract = ERC721Burnable(_avatarContract);
+    }
+
+    function setEquipmentContract(address _equipmentContract) external {
+        equipmentContract = IBGEquipment(_equipmentContract);
+    }
+
+    function setAccountContract(address _accountContract) external {
+        accountContract = _accountContract;
+    }
+
+    function setRegistryContract(address _registryContract) external {
+        registryContract = IERC6551Registry(_registryContract);
+    }
+
     function generateRandomDamage() internal view returns (uint256) {
-        uint256 damage = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao)));
+        uint256 damage = uint256(
+            keccak256(abi.encodePacked(block.timestamp, block.prevrandao))
+        );
         return uint8(damage % 11);
     }
 
@@ -61,19 +88,15 @@ contract Battle {
             loser,
             loser
         );
-        uint256[] memory ownedEquipment = equipmentContract.getOwnedTokens(loserAccount);
+        uint256[] memory ownedEquipment = equipmentContract.getOwnedTokens(
+            loserAccount
+        );
         address winnerAvatarOwner = avatarContract.ownerOf(winner);
         for (uint256 i = 0; i < ownedEquipment.length; i++) {
-            IERC6551Executable(loserAccount).execute(
-                address(equipmentContract),
-                0,
-                abi.encodePacked(
-                    "safeTransferFrom(address,address,uint256)",
-                    loserAccount,
-                    winnerAvatarOwner,
-                    ownedEquipment[i]
-                ),
-                0
+            equipmentContract.safeTransferFrom(
+                loserAccount,
+                winnerAvatarOwner,
+                ownedEquipment[i]
             );
         }
         avatarContract.burn(loser);

@@ -5,9 +5,17 @@ import useEquipment from '@/hooks/useEquipment';
 import React from 'react';
 import { DndContext } from '@dnd-kit/core';
 import { Droppable } from '@/components/Droppable';
+import TransferModal from '@/components/TransferModal';
 
 const GameRoom = () => {
-  const { avatars, createAvatar, setActiveAvatar, unequipItem } = useAvatars();
+  const [transferModalOpen, setTransferModalOpen] = React.useState(false);
+  const {
+    avatars,
+    createAvatar,
+    setActiveAvatar,
+    unequipItem,
+    transferEquipment,
+  } = useAvatars();
   const { myItems, createEquipment, equipItem } = useEquipment();
 
   function handleDragEnd({ over, active }: any) {
@@ -19,11 +27,26 @@ const GameRoom = () => {
 
     const account = over?.data?.current?.avatar?.account;
     const itemId = active?.id;
-    if (account && itemId) {
-      equipItem(account, itemId);
+    console.log(over, active);
+    if (
+      active?.data?.current?.avatar?.account &&
+      over?.data?.current?.avatar?.account &&
+      over?.data?.current?.avatar?.account !==
+        active?.data?.current?.avatar?.account
+    ) {
+      transferEquipment(
+        active?.data?.current?.avatar?.account,
+        over?.data?.current?.avatar?.account,
+        active?.id
+      );
+      return;
     }
     if (over?.id === 'my-items') {
       unequipItem(active.id);
+      return;
+    }
+    if (account && itemId) {
+      equipItem(account, itemId);
     }
   }
 
@@ -47,7 +70,10 @@ const GameRoom = () => {
                 <button className="btn" onClick={createAvatar}>
                   Mint Avatar
                 </button>
-                <button className="btn" onClick={createAvatar}>
+                <button
+                  className="btn"
+                  onClick={() => setTransferModalOpen(true)}
+                >
                   Transfer Avatar
                 </button>
               </div>
@@ -58,8 +84,13 @@ const GameRoom = () => {
                 <button className="btn" onClick={createEquipment}>
                   Mint Equipment
                 </button>
-                <button className="btn" onClick={createAvatar}>
-                  Transfer Equipment
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 border border-indigo-300 rounded-md p-4">
+              <div>Battle</div>
+              <div className="flex gap-4">
+                <button className="btn" onClick={createEquipment}>
+                  Challenge to battle!
                 </button>
               </div>
             </div>
@@ -82,10 +113,14 @@ const GameRoom = () => {
             </div>
           </div>
         </Droppable>
-        <div className="flex gap-4 mt-6">
+        <div className="grid grid-cols-4 gap-4 mt-6">
           <PlayerCard avatars={avatars} />
         </div>
       </DndContext>
+      <TransferModal
+        open={transferModalOpen}
+        onClose={() => setTransferModalOpen(false)}
+      />
     </div>
   );
 };

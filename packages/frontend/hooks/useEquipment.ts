@@ -57,6 +57,7 @@ const useEquipment = () => {
           tokenURI: string;
         };
       };
+      if (!createdEvent) return;
       if (createdEvent.args.owner !== address) return;
       setMyItems((prev) => [
         ...prev,
@@ -78,7 +79,6 @@ const useEquipment = () => {
     eventName: 'EquipmentTransferred',
     listener(log) {
       // @ts-ignore
-      // @ts-ignore
       const transferEvent = log.find(
         // @ts-ignore
         (logItem) => logItem.eventName === 'EquipmentTransferred'
@@ -91,6 +91,7 @@ const useEquipment = () => {
           name: string;
         };
       };
+      if (!transferEvent) return;
       setMyItems((prev) => {
         // if its minted ignore
         if (transferEvent.args.from === zeroAddress) return prev;

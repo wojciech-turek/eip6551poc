@@ -16,4 +16,9 @@ const func: DeployFunction = async function (
 };
 
 export default func;
-func.tags = ['EIP6551', 'BG_Equipment_deploy'];
+func.tags = ['EIP6551', 'Battle_deploy'];
+func.dependencies = [
+  'BG_Avatars_deploy',
+  'BG_Equipment_deploy',
+  'EIP6551Account_deploy',
+];
