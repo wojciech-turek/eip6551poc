@@ -44,33 +44,37 @@ const useEquipment = () => {
     ...equipmentContract,
     eventName: 'EquipmentCreated',
     listener(log) {
-      // @ts-ignore
-      // @ts-ignore
-      const createdEvent = log.find(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'EquipmentCreated'
-      ) as {
+      const createdEvents: {
         args: {
           owner: string;
           name: string;
           tokenId: bigint;
           tokenURI: string;
         };
-      };
-      if (!createdEvent) return;
-      if (createdEvent.args.owner !== address) return;
-      setMyItems((prev) => [
-        ...prev,
-        {
-          owner: createdEvent.args.owner,
-          name: createdEvent.args.name,
-          id: Number(createdEvent.args.tokenId),
-          image: createdEvent.args.tokenURI.replace(
-            'ipfs://',
-            'https://ipfs.io/ipfs/'
-          ),
-        },
-      ]);
+      }[] = log.filter(
+        // @ts-ignore
+        (logItem) => logItem.eventName === 'EquipmentCreated'
+      );
+      if (!createdEvents.length) return;
+      // if none of the events are for the current user, ignore
+      const myCreatedEquipment = createdEvents.filter(
+        (event) => event.args.owner === address
+      );
+      if (!myCreatedEquipment.length) return;
+      myCreatedEquipment.forEach((createdEvent) => {
+        setMyItems((prev) => [
+          ...prev,
+          {
+            owner: createdEvent.args.owner,
+            name: createdEvent.args.name,
+            id: Number(createdEvent.args.tokenId),
+            image: createdEvent.args.tokenURI.replace(
+              'ipfs://',
+              'https://ipfs.io/ipfs/'
+            ),
+          },
+        ]);
+      });
     },
   });
 
@@ -79,10 +83,7 @@ const useEquipment = () => {
     eventName: 'EquipmentTransferred',
     listener(log) {
       // @ts-ignore
-      const transferEvent = log.find(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'EquipmentTransferred'
-      ) as {
+      const transferEvents: {
         args: {
           from: string;
           to: string;
@@ -90,35 +91,40 @@ const useEquipment = () => {
           tokenURI: string;
           name: string;
         };
-      };
-      if (!transferEvent) return;
-      setMyItems((prev) => {
-        // if its minted ignore
-        if (transferEvent.args.from === zeroAddress) return prev;
-        if (transferEvent.args.from === address) {
-          const index = prev.findIndex(
-            (item) => item.id === Number(transferEvent.args.tokenId)
-          );
-          if (index === -1) return prev;
-          const newItems = [...prev];
-          newItems.splice(index, 1);
-          return newItems;
-        }
-        if (transferEvent.args.to === address) {
-          return [
-            ...prev,
-            {
-              owner: transferEvent.args.to,
-              name: transferEvent.args.name,
-              id: Number(transferEvent.args.tokenId),
-              image: transferEvent.args.tokenURI.replace(
-                'ipfs://',
-                'https://ipfs.io/ipfs/'
-              ),
-            },
-          ];
-        }
-        return prev;
+      }[] = log.filter(
+        // @ts-ignore
+        (logItem) => logItem.eventName === 'EquipmentTransferred'
+      );
+      if (!transferEvents.length) return;
+      transferEvents.forEach((transferEvent) => {
+        setMyItems((prev) => {
+          // if its minted ignore
+          if (transferEvent.args.from === zeroAddress) return prev;
+          if (transferEvent.args.from === address) {
+            const index = prev.findIndex(
+              (item) => item.id === Number(transferEvent.args.tokenId)
+            );
+            if (index === -1) return prev;
+            const newItems = [...prev];
+            newItems.splice(index, 1);
+            return newItems;
+          }
+          if (transferEvent.args.to === address) {
+            return [
+              ...prev,
+              {
+                owner: transferEvent.args.to,
+                name: transferEvent.args.name,
+                id: Number(transferEvent.args.tokenId),
+                image: transferEvent.args.tokenURI.replace(
+                  'ipfs://',
+                  'https://ipfs.io/ipfs/'
+                ),
+              },
+            ];
+          }
+          return prev;
+        });
       });
     },
   });

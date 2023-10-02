@@ -7,8 +7,8 @@ import {
   avatarContractAddress,
   equipmentContractAddress,
 } from '@/constants/contracts';
-import { useState } from 'react';
-import { encodeFunctionData } from 'viem';
+import { useEffect, useState } from 'react';
+import { encodeFunctionData, zeroAddress } from 'viem';
 import { useAccount, useContractEvent, useContractWrite } from 'wagmi';
 
 const avatarHashes: string[] = [
@@ -96,21 +96,21 @@ const useAvatars = () => {
     eventName: 'AvatarCreated',
     listener(log) {
       // @ts-ignore
-      const createdEvent = log.find(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'AvatarCreated'
-      ) as {
+      const createdEvents: {
         args: {
           owner: string;
           account: string;
           tokenId: bigint;
           tokenURI: string;
         };
-      };
-      if (!createdEvent) return;
+      }[] = log.filter(
+        // @ts-ignore
+        (logItem) => logItem.eventName === 'AvatarCreated'
+      );
+      if (!createdEvents.length) return;
       setAvatars((prev) => [
         ...prev,
-        {
+        ...createdEvents.map((createdEvent) => ({
           owner: createdEvent.args.owner,
           account: createdEvent.args.account,
           id: Number(createdEvent.args.tokenId),
@@ -119,8 +119,42 @@ const useAvatars = () => {
             'https://ipfs.io/ipfs/'
           ),
           itemsOwned: [],
-        },
+        })),
       ]);
+    },
+  });
+
+  useContractEvent({
+    ...avatarContract,
+    eventName: 'Transfer',
+    listener(log) {
+      // @ts-ignore
+      const transferEvents: {
+        args: {
+          from: string;
+          to: string;
+          tokenId: bigint;
+        };
+      }[] = log.filter(
+        (logItem) =>
+          // @ts-ignore
+          logItem.eventName === 'Transfer' && logItem.args.from !== zeroAddress
+      );
+      if (!transferEvents.length) return;
+      for (const transferEvent of transferEvents) {
+        setAvatars((prev) => {
+          const avatarIndex = prev.findIndex(
+            (a) => a.owner === transferEvent.args.from
+          );
+          if (avatarIndex === -1) return prev;
+          const newAvatars = [...prev];
+          newAvatars[avatarIndex] = {
+            ...newAvatars[avatarIndex],
+            owner: transferEvent.args.to,
+          };
+          return newAvatars;
+        });
+      }
     },
   });
 
@@ -130,10 +164,7 @@ const useAvatars = () => {
     eventName: 'EquipmentTransferred',
     listener(log) {
       // @ts-ignore
-      const transferEvent = log.find(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'EquipmentTransferred'
-      ) as {
+      const transferEvents: {
         args: {
           from: string;
           to: string;
@@ -141,40 +172,45 @@ const useAvatars = () => {
           tokenURI: string;
           name: string;
         };
-      };
-      if (!transferEvent) return;
-      setAvatars((prev) => {
-        const avatar = prev.find(
-          (a) =>
-            a.account === transferEvent.args.to ||
-            a.account === transferEvent.args.from
-        );
-        if (!avatar) return prev;
-        return prev.map((a) => {
-          if (transferEvent.args.to === a.account)
-            return {
-              ...a,
-              itemsOwned: [
-                ...(a.itemsOwned ?? []),
-                {
-                  name: transferEvent.args.name,
-                  id: Number(transferEvent.args.tokenId),
-                  image: transferEvent.args.tokenURI.replace(
-                    'ipfs://',
-                    'https://ipfs.io/ipfs/'
-                  ),
-                  owner: transferEvent.args.to,
-                },
-              ],
-            };
-          if (transferEvent.args.from === a.account)
-            return {
-              ...a,
-              itemsOwned: a.itemsOwned?.filter(
-                (i) => i.id !== Number(transferEvent.args.tokenId)
-              ),
-            };
-          return a;
+      }[] = log.filter(
+        // @ts-ignore
+        (logItem) => logItem.eventName === 'EquipmentTransferred'
+      );
+      if (!transferEvents) return;
+      transferEvents.forEach((transferEvent) => {
+        setAvatars((prev) => {
+          const avatar = prev.find(
+            (a) =>
+              a.account === transferEvent.args.to ||
+              a.account === transferEvent.args.from
+          );
+          if (!avatar) return prev;
+          return prev.map((a) => {
+            if (transferEvent.args.to === a.account)
+              return {
+                ...a,
+                itemsOwned: [
+                  ...(a.itemsOwned ?? []),
+                  {
+                    name: transferEvent.args.name,
+                    id: Number(transferEvent.args.tokenId),
+                    image: transferEvent.args.tokenURI.replace(
+                      'ipfs://',
+                      'https://ipfs.io/ipfs/'
+                    ),
+                    owner: transferEvent.args.to,
+                  },
+                ],
+              };
+            if (transferEvent.args.from === a.account)
+              return {
+                ...a,
+                itemsOwned: a.itemsOwned?.filter(
+                  (i) => i.id !== Number(transferEvent.args.tokenId)
+                ),
+              };
+            return a;
+          });
         });
       });
     },
