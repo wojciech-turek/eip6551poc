@@ -143,6 +143,8 @@ const useAvatars = () => {
       if (!transferEvents.length) return;
       for (const transferEvent of transferEvents) {
         setAvatars((prev) => {
+          if (transferEvent.args.to === zeroAddress)
+            return prev.filter((a) => a.owner !== transferEvent.args.from);
           const avatarIndex = prev.findIndex(
             (a) => a.owner === transferEvent.args.from
           );

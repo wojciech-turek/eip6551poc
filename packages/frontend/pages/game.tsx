@@ -6,9 +6,11 @@ import React from 'react';
 import { DndContext } from '@dnd-kit/core';
 import { Droppable } from '@/components/Droppable';
 import TransferModal from '@/components/TransferModal';
+import BattleModal from '@/components/BattleModal';
 
 const GameRoom = () => {
   const [transferModalOpen, setTransferModalOpen] = React.useState(false);
+  const [battleModalOpen, setBattleModalOpen] = React.useState(false);
   const {
     avatars,
     createAvatar,
@@ -89,7 +91,10 @@ const GameRoom = () => {
             <div className="flex flex-col gap-2 border border-indigo-300 rounded-md p-4">
               <div>Battle</div>
               <div className="flex gap-4">
-                <button className="btn" onClick={createEquipment}>
+                <button
+                  className="btn"
+                  onClick={() => setBattleModalOpen(true)}
+                >
                   Challenge to battle!
                 </button>
               </div>
@@ -120,6 +125,10 @@ const GameRoom = () => {
       <TransferModal
         open={transferModalOpen}
         onClose={() => setTransferModalOpen(false)}
+      />
+      <BattleModal
+        open={battleModalOpen}
+        onClose={() => setBattleModalOpen(false)}
       />
     </div>
   );

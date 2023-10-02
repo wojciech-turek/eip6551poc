@@ -14,7 +14,16 @@ const useBattle = () => {
     functionName: 'battle',
   });
 
-  const startBattle = async () => {};
+  const startBattle = async (tokenId1: number, tokenId2: number) => {
+    if (!battle) return;
+    await battle({
+      args: [tokenId1, tokenId2],
+    });
+  };
+
+  return {
+    startBattle,
+  };
 };
 
 export default useBattle;

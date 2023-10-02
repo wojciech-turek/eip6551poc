@@ -21,7 +21,6 @@ contract BGAvatars is
     Counters.Counter private _tokenIdCounter;
     address public accountImplementation;
     IERC6551Registry public registry;
-    address battleContract;
 
     event AvatarCreated(
         address indexed owner,
@@ -32,14 +31,11 @@ contract BGAvatars is
 
     constructor(
         address _accountImplementation,
-        address _registry,
-        address _battleContract
+        address _registry
     ) ERC721('BGAvatars', 'BGA') {
         _tokenIdCounter.increment();
         accountImplementation = _accountImplementation;
         registry = IERC6551Registry(_registry);
-        battleContract = _battleContract;
-        setApprovalForAll(battleContract, true);
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -59,8 +55,11 @@ contract BGAvatars is
             tokenId,
             ''
         );
+        emit AvatarCreated(to, tokenId, address(account), tokenURI(tokenId));
+    }
 
-        emit AvatarCreated(to, tokenId, account, tokenURI(tokenId));
+    function battleBurn(uint256 tokenId) public {
+        _burn(tokenId);
     }
 
     // The following functions are overrides required by Solidity.

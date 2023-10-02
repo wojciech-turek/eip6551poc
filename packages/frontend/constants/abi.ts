@@ -13,6 +13,11 @@ export const AvatarContractABI = [
         name: '_registry',
         type: 'address',
       },
+      {
+        internalType: 'address',
+        name: '_battleContract',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -222,6 +227,19 @@ export const AvatarContractABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -566,7 +584,13 @@ export const AvatarContractABI = [
 
 export const EqupimentContractABI = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_battleContract',
+        type: 'address',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
@@ -815,6 +839,25 @@ export const EqupimentContractABI = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'getOwnedTokens',
+    outputs: [
+      {
+        internalType: 'uint256[]',
+        name: '',
+        type: 'uint256[]',
       },
     ],
     stateMutability: 'view',
@@ -1444,38 +1487,7 @@ export const BattleContractABI = [
         type: 'uint256',
       },
     ],
-    name: 'BattleEnded',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'uint256',
-        name: 'tokenId1',
-        type: 'uint256',
-      },
-      {
-        indexed: true,
-        internalType: 'uint256',
-        name: 'tokenId2',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'damage1',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'damage2',
-        type: 'uint256',
-      },
-    ],
-    name: 'DamageRound',
+    name: 'BattleCommenced',
     type: 'event',
   },
   {

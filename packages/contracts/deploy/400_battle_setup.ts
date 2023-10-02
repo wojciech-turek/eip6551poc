@@ -8,20 +8,16 @@ const func: DeployFunction = async function (
   const { deployer } = await getNamedAccounts();
   const { execute } = deployments;
 
-  const AccountImplementationContract = await deployments.get('ERC6551Account');
-  const EquipmentContract = await deployments.get('BGEquipment');
   const AvatarContract = await deployments.get('BGAvatars');
-  const RegistryContract = await deployments.get('ERC6551Registry');
 
   await execute(
     'Battle',
     { from: deployer },
     'initialize',
-    AvatarContract.address,
-    EquipmentContract.address,
-    AccountImplementationContract.address,
-    RegistryContract.address
+    AvatarContract.address
   );
+
+  console.log('Battle contract initialized');
 };
 
 export default func;

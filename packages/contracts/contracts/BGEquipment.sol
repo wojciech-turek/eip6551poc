@@ -18,7 +18,6 @@ contract BGEquipment is
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
-    address battleContract;
     mapping(uint256 => string) public names;
     mapping(address => uint256[]) private ownedTokens;
 
@@ -36,10 +35,8 @@ contract BGEquipment is
         string name
     );
 
-    constructor(address _battleContract) ERC721('BGEquipment', 'BGE') {
+    constructor() ERC721('BGEquipment', 'BGE') {
         _tokenIdCounter.increment();
-        battleContract = _battleContract;
-        setApprovalForAll(battleContract, true);
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -122,7 +119,7 @@ contract BGEquipment is
     )
         public
         view
-        override(ERC721, ERC721Enumerable, ERC721URIStorage)
+        override(IERC165, ERC721, ERC721Enumerable, ERC721URIStorage)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
