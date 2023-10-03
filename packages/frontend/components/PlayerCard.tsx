@@ -25,9 +25,8 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
             ID: {avatar.id}
           </div>
           <img
-            width={200}
-            height={200}
-            className="object-cover w-full"
+            width={120}
+            className="object-cover overflow-hidden mx-auto max-h-42"
             src={avatar.image}
             alt="avatar"
           />
