@@ -10,10 +10,6 @@ const items: {
   name: string;
 }[] = [
   {
-    imageHash: 'QmbmEbjt41oEjE9DyDLvRbECZX7VtMYxV577ZiHgse57QM',
-    name: 'Prickle Lance',
-  },
-  {
     imageHash: 'QmNdLoLrcBTnqSEYSetpFYyW5cxNf7ePuADXh38QKtcC1k',
     name: 'Sorrow',
   },
