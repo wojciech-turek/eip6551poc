@@ -5,10 +5,57 @@ import { useContractEvent } from 'wagmi';
 import { equipmentContractAddress } from '@/constants/contracts';
 import { zeroAddress } from 'viem';
 
-const items = [
+const items: {
+  imageHash: string;
+  name: string;
+}[] = [
   {
-    name: 'Prickle Lance',
     imageHash: 'QmbmEbjt41oEjE9DyDLvRbECZX7VtMYxV577ZiHgse57QM',
+    name: 'Prickle Lance',
+  },
+  {
+    imageHash: 'QmNdLoLrcBTnqSEYSetpFYyW5cxNf7ePuADXh38QKtcC1k',
+    name: 'Sorrow',
+  },
+  {
+    imageHash: 'QmPUeYsJ6kbgZnqurksdoMXPhRzsjPxisamc9DyFpAnUpk',
+    name: "Heaven's Fall",
+  },
+  {
+    imageHash: 'QmeswyxQ2EgiqDKGPy4KSmW1tPvF7zDiP6khMgEP2xGquZ',
+    name: 'Protector',
+  },
+  {
+    imageHash: 'QmYM1H69idL5JvfJ8G9CHPjq9PvhDoJUvHbQAh2aQv1fsN',
+    name: 'Albatros Bow',
+  },
+  {
+    imageHash: 'QmXu8eHV6Afq8226yVUWM7GHUuw8ymaiS2f6SuZ9NreAf1',
+    name: 'Breaker',
+  },
+  {
+    imageHash: 'QmPJ9f7343cL8KkbVfMiocUu4PyzbbAC9mzr9NxGd3WsKo',
+    name: 'Chaos Axe',
+  },
+  {
+    imageHash: 'Qmc7pEbwbCWiFeyAWjtwq6L2XWqUqB5cajxnU1Ej29k6qE',
+    name: 'Royal Armor',
+  },
+  {
+    imageHash: 'QmSPmJNvqAvs8RKv8YUnuUFvKNceVZcBhcwDG6Zubqjb4w',
+    name: 'Double Blade',
+  },
+  {
+    imageHash: 'QmQ4UoVyFeY1S6k3BR8drMWxhSc4nZ9H7CVsiLjqxs7T69',
+    name: 'Flamberg',
+  },
+  {
+    imageHash: 'QmYKYp2A75jMHfNMkKupXbu1hSHWMrWpV47UnRh8BrTT65',
+    name: 'Lord Scepter',
+  },
+  {
+    imageHash: 'QmXGbzUAxs21j9MvEjtqw9v5bfF8ichH5VH1GMAD4Ga8L1',
+    name: 'Dancer Sword',
   },
 ];
 
@@ -31,7 +78,10 @@ const useEquipment = () => {
   const { writeAsync } = useContractWrite({
     ...equipmentContract,
     functionName: 'safeMint',
-    args: [address, items[0].imageHash, items[0].name],
+    args: [
+      address,
+      ...Object.values(items[Math.floor(Math.random() * items.length)]),
+    ],
   });
 
   const createEquipment = async () => {
@@ -70,7 +120,7 @@ const useEquipment = () => {
             id: Number(createdEvent.args.tokenId),
             image: createdEvent.args.tokenURI.replace(
               'ipfs://',
-              'https://ipfs.io/ipfs/'
+              'https://gray-zygotic-barracuda-960.mypinata.cloud/ipfs/'
             ),
           },
         ]);
@@ -118,7 +168,7 @@ const useEquipment = () => {
                 id: Number(transferEvent.args.tokenId),
                 image: transferEvent.args.tokenURI.replace(
                   'ipfs://',
-                  'https://ipfs.io/ipfs/'
+                  'https://gray-zygotic-barracuda-960.mypinata.cloud/ipfs/'
                 ),
               },
             ];
