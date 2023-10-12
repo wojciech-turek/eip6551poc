@@ -1,31 +1,27 @@
-import {
-  AccountContractABI,
-  AvatarContractABI,
-  EqupimentContractABI,
-} from '@/constants/abi';
-import {
-  avatarContractAddress,
-  equipmentContractAddress,
-} from '@/constants/contracts';
-import { useState } from 'react';
-import { encodeFunctionData, zeroAddress } from 'viem';
-import { useAccount, useContractEvent, useContractWrite } from 'wagmi';
+import ERC6551Account from '@/constants/ERC6551Account.json';
+import BGAvatars from '@/constants/BGAvatars.json';
+import BGEquipment from '@/constants/BGEquipment.json';
+import { useContext, useState } from 'react';
+import { encodeFunctionData } from 'viem';
+import { useAccount, useContractWrite } from 'wagmi';
+import { AvatarsContext } from '@/pages/_app';
 
 const avatarHashes: string[] = [
-  'QmbMvupACVKJFJejD9HtXFVW39vNf2DFX4peATKn6noQsg',
-  'Qmbh5MidVz6hddGX2ZGhgr8dPjGAFNUj9KE2rNhHwBfvUC',
-  'Qmb5Z8a64y87PbV6PgjTk6gb2TVL6hDcHkVvxZUc5GZzsz',
-  'QmVDfF2SygdDZDpv6HMyoTEiH22cCuuyZjc2L9PBbk6i1H',
-  'Qma6P4BHeqipkwd6pQjzYPRTAYKWdG1KAhoepzmTb4d4rX',
-  'QmSRpA5i3bWGoZZ5q5KnfuM541Vu5oWU4q8ZjBVCYHcNWX',
-  'QmWcUUUAZuUtyQGmsRjLTxh7RA3Ljh73pqM8mkrPcMhLog',
-  'QmVGneieuAHspF81BMYaJZ2YKtFGk3hmR1dyR9UAJpdJWK',
-  'QmPByMy9q38jKhs6bNYhApHmTK1BHYfKnKKoLrXiH6Fmcm',
-  'QmT1xeaqWD7Pvr9XszHfACB3wKALocJARSXAVU26gV6Hsn',
-  'Qmcg3bnVaCkMo81yQhc7ux5f5Jdgnu9CzC35zSeGJyiVn4',
-  'QmbACMqvTi7N5g1poe624Y34tbxQJPgCwfDNpNboCFoVNq',
-  'QmXvwxyNnNdxvXU6fxqader19xK8FfRCrCjquRAPug8viD',
-  'QmRct4D9s74E7CUxArEJKyG6G8MzNGxtXjhLyGBsoq95b4',
+  'https://api.sandbox.game/avatars/presets/6976cc63-8127-45ba-af90-31ddd494c6f1/thumbnail.png?QmcC3jZGwahxCgM75fRTTNsWdXvyq8sYkRfCijVYaVpdDg',
+  'https://api.sandbox.game/avatars/presets/941ac0be-63f1-4f94-bc30-8bcc2f6fc31a/thumbnail.png?QmRfoW1AUuHxwwNR8qzcsDZYQR2b1UNscw7RSfrFYprcPN',
+  'https://api.sandbox.game/avatars/presets/c3b99f97-714f-4ad3-aa2b-12d4f511fa54/thumbnail.png?QmfC5VAVMwNq7sFJLBSGAhyXK7cvLhRQbJu9izuWdNHjSe',
+  'https://api.sandbox.game/avatars/presets/b768f1ee-95db-46b0-86fd-4e2eaac3b537/thumbnail.png?QmZYtCH1v7URKXAvCtudoJg9RWjsAq1vVgGLRaS64kP34G',
+  'https://api.sandbox.game/avatars/presets/0fb42263-cd7b-4c43-91a3-ddfc8bd0e8e6/thumbnail.png?QmSjs46LSQpoW64mhBr8ywuAMSnmLt3EDkSDK7LyvowGmd',
+  'https://api.sandbox.game/avatars/presets/b5a9e3d5-768c-4f90-bb15-857ddb4bc720/thumbnail.png?QmSrxN92nvtwRgSSeYmWv6PdcwPhufref9eVATfDRdze66',
+  'https://api.sandbox.game/avatars/presets/a55ca6fc-8f84-40a5-a6fa-c891806f1f3d/thumbnail.png?QmNVuYQeUBhJwNrazNBZkEB5rxM3PHZ6SNdFsAMNVu5fVQ',
+  'https://api.sandbox.game/avatars/presets/2ec3d414-cb18-47cd-a761-b5c89d50fdb4/thumbnail.png?QmXerMpXyq7TCnfciFda1LBJ6UVK6yjzNzVnTQtSyzTdoc',
+  'https://api.sandbox.game/avatars/presets/db9eaec6-e631-49b3-8a30-2c31733ac20f/thumbnail.png?QmPRkcxh5NreR1kEvgzzi1c56m3eMqR6YnmmbuBkQwQRDF',
+  'https://api.sandbox.game/avatars/presets/50b855cb-3d11-478d-bafc-e4bbc2b8b636/thumbnail.png?QmawmczpT4zevyxkhJoLkA2WmsqDG4PDFERVTBh8AE1A6U',
+  'https://api.sandbox.game/avatars/presets/bbdd8be1-8f0c-4475-a799-611fc1866473/thumbnail.png?QmV5iaEUKHQ88dUyoUsNTzeUXXtf95gn1C6khBFmV8MKZD',
+  'https://api.sandbox.game/avatars/presets/13a3b5bc-6045-4d95-853d-a07f850b5fc1/thumbnail.png?QmZ3jWyAmfNjbakjHJMG3Mjn6TikqfVGsy4FnHHU3d4HXf',
+  'https://api.sandbox.game/avatars/presets/bc832d7d-1e4e-4131-af42-3141af12779f/thumbnail.png?QmdNa3UZKtbNwC7mkuii7yJnnCGMLdfgEHcNGcs19VaQtr',
+  'https://api.sandbox.game/avatars/presets/299075af-0ab9-49b7-9a4b-84567b3b101d/thumbnail.png?QmeEQZgCoiwrNTGmJwGMdhPYhZWQaNswxQNeAKkhZnL8Qr',
+  'https://api.sandbox.game/avatars/presets/8fa80bf6-0761-45eb-8c8d-f258d3348e5a/thumbnail.png?QmQuuXFLXzChKd4voAtwFk2tzbs3HxJHjrxT1BJeEuNm7d',
 ];
 
 export type Avatar = {
@@ -33,6 +29,7 @@ export type Avatar = {
   account: string;
   id: number;
   image: string;
+  experience: number;
   itemsOwned: ItemOwned[];
 };
 
@@ -44,24 +41,18 @@ export type ItemOwned = {
 };
 
 const useAvatars = () => {
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
+  const { avatars } = useContext(AvatarsContext);
   const [activeAvatar, setActiveAvatar] = useState<Avatar | null>(null);
   const { address } = useAccount();
 
   const avatarContract = {
-    address: avatarContractAddress,
-    abi: AvatarContractABI,
-    chainId: 80001,
-  };
-
-  const equipmentContract = {
-    address: equipmentContractAddress,
-    abi: EqupimentContractABI,
+    address: BGAvatars.address as `0x${string}`,
+    abi: BGAvatars.abi,
     chainId: 80001,
   };
 
   const accountContract = {
-    abi: AccountContractABI,
+    abi: ERC6551Account.abi,
     chainId: 80001,
   };
 
@@ -86,10 +77,10 @@ const useAvatars = () => {
     if (!unequip) return;
     await unequip({
       args: [
-        equipmentContractAddress,
+        BGEquipment.address,
         0,
         encodeFunctionData({
-          abi: EqupimentContractABI,
+          abi: BGEquipment.abi,
           args: [activeAvatar?.account ?? '', address, itemId],
           functionName: 'safeTransferFrom',
         }),
@@ -103,133 +94,6 @@ const useAvatars = () => {
     if (!mintAvatar) return;
     await mintAvatar();
   };
-
-  useContractEvent({
-    ...avatarContract,
-    eventName: 'AvatarCreated',
-    listener(log) {
-      // @ts-ignore
-      const createdEvents: {
-        args: {
-          owner: string;
-          account: string;
-          tokenId: bigint;
-          tokenURI: string;
-        };
-      }[] = log.filter(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'AvatarCreated'
-      );
-      if (!createdEvents.length) return;
-      setAvatars((prev) => [
-        ...prev,
-        ...createdEvents.map((createdEvent) => ({
-          owner: createdEvent.args.owner,
-          account: createdEvent.args.account,
-          id: Number(createdEvent.args.tokenId),
-          image: createdEvent.args.tokenURI.replace(
-            'ipfs://',
-            'https://gray-zygotic-barracuda-960.mypinata.cloud/ipfs/'
-          ),
-          itemsOwned: [],
-        })),
-      ]);
-    },
-  });
-
-  useContractEvent({
-    ...avatarContract,
-    eventName: 'Transfer',
-    listener(log) {
-      // @ts-ignore
-      const transferEvents: {
-        args: {
-          from: string;
-          to: string;
-          tokenId: bigint;
-        };
-      }[] = log.filter(
-        (logItem) =>
-          // @ts-ignore
-          logItem.eventName === 'Transfer' && logItem.args.from !== zeroAddress
-      );
-      if (!transferEvents.length) return;
-      for (const transferEvent of transferEvents) {
-        setAvatars((prev) => {
-          if (transferEvent.args.to === zeroAddress)
-            return prev.filter((a) => a.owner !== transferEvent.args.from);
-          const avatarIndex = prev.findIndex(
-            (a) => a.owner === transferEvent.args.from
-          );
-          if (avatarIndex === -1) return prev;
-          const newAvatars = [...prev];
-          newAvatars[avatarIndex] = {
-            ...newAvatars[avatarIndex],
-            owner: transferEvent.args.to,
-          };
-          return newAvatars;
-        });
-      }
-    },
-  });
-
-  // listen for equipment events to see if it was transferred to one of our avatars
-  useContractEvent({
-    ...equipmentContract,
-    eventName: 'EquipmentTransferred',
-    listener(log) {
-      // @ts-ignore
-      const transferEvents: {
-        args: {
-          from: string;
-          to: string;
-          tokenId: bigint;
-          tokenURI: string;
-          name: string;
-        };
-      }[] = log.filter(
-        // @ts-ignore
-        (logItem) => logItem.eventName === 'EquipmentTransferred'
-      );
-      if (!transferEvents) return;
-      transferEvents.forEach((transferEvent) => {
-        setAvatars((prev) => {
-          const avatar = prev.find(
-            (a) =>
-              a.account === transferEvent.args.to ||
-              a.account === transferEvent.args.from
-          );
-          if (!avatar) return prev;
-          return prev.map((a) => {
-            if (transferEvent.args.to === a.account)
-              return {
-                ...a,
-                itemsOwned: [
-                  ...(a.itemsOwned ?? []),
-                  {
-                    name: transferEvent.args.name,
-                    id: Number(transferEvent.args.tokenId),
-                    image: transferEvent.args.tokenURI.replace(
-                      'ipfs://',
-                      'https://gray-zygotic-barracuda-960.mypinata.cloud/ipfs/'
-                    ),
-                    owner: transferEvent.args.to,
-                  },
-                ],
-              };
-            if (transferEvent.args.from === a.account)
-              return {
-                ...a,
-                itemsOwned: a.itemsOwned?.filter(
-                  (i) => i.id !== Number(transferEvent.args.tokenId)
-                ),
-              };
-            return a;
-          });
-        });
-      });
-    },
-  });
 
   const { writeAsync: transfer } = useContractWrite({
     ...avatarContract,
@@ -255,10 +119,10 @@ const useAvatars = () => {
     if (!transferItem) return;
     transferItem({
       args: [
-        equipmentContractAddress,
+        BGEquipment.address,
         0,
         encodeFunctionData({
-          abi: EqupimentContractABI,
+          abi: BGEquipment.abi,
           args: [from, to, itemId],
           functionName: 'safeTransferFrom',
         }),

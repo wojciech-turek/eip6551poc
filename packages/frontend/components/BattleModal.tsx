@@ -4,6 +4,7 @@ import useAvatars, { Avatar } from '@/hooks/useAvatars';
 import { useAccount } from 'wagmi';
 import { classNames } from '@/utils/classNames';
 import useBattle from '@/hooks/useBattle';
+import { zeroAddress } from 'viem';
 
 type Props = {
   open: boolean;
@@ -22,7 +23,9 @@ const BattleModal = ({ open, onClose }: Props) => {
 
   useEffect(() => {
     const myAvatars = avatars.filter((avatar) => avatar.owner === address);
-    const enemyAvatars = avatars.filter((avatar) => avatar.owner !== address);
+    const enemyAvatars = avatars.filter(
+      (avatar) => avatar.owner !== zeroAddress && avatar.owner !== address
+    );
     setEnemyAvatars(enemyAvatars);
     setMyAvatars(myAvatars);
     setMySelectedAvatarId(myAvatars[0]?.id);

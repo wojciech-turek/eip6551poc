@@ -1,16 +1,22 @@
 import { Draggable } from '@/components/Draggable';
+import Image from 'next/image';
 import PlayerCard from '@/components/PlayerCard';
 import useAvatars from '@/hooks/useAvatars';
 import useEquipment from '@/hooks/useEquipment';
-import React from 'react';
+import React, { useContext } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import { Droppable } from '@/components/Droppable';
 import TransferModal from '@/components/TransferModal';
 import BattleModal from '@/components/BattleModal';
+import BumpModal from '@/components/BumpModal';
+import useEventListener from '@/hooks/useEventListener';
+import { BattleDetailsContext } from './_app';
 
 const GameRoom = () => {
   const [transferModalOpen, setTransferModalOpen] = React.useState(false);
   const [battleModalOpen, setBattleModalOpen] = React.useState(false);
+  const { battleDetails, battleResultsModalOpen, setBattleResultsModalOpen } =
+    useContext(BattleDetailsContext);
   const {
     avatars,
     createAvatar,
@@ -19,6 +25,7 @@ const GameRoom = () => {
     transferEquipment,
   } = useAvatars();
   const { myItems, createEquipment, equipItem } = useEquipment();
+  useEventListener();
 
   function handleDragEnd({ over, active }: any) {
     if (
@@ -29,7 +36,6 @@ const GameRoom = () => {
 
     const account = over?.data?.current?.avatar?.account;
     const itemId = active?.id;
-    console.log(over, active);
     if (
       active?.data?.current?.avatar?.account &&
       over?.data?.current?.avatar?.account &&
@@ -59,14 +65,14 @@ const GameRoom = () => {
     }
   };
   return (
-    <div className="mx-auto max-w-7xl sm:py-6 lg:py-24 sm:px-6 lg:px-8">
+    <div className="relative mx-auto mt-32 max-w-7xl sm:py-6 lg:py-16 sm:px-6 lg:px-8 bg-white rounded-md bg-opacity-70">
       <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-        <div className="flex flex-col gap-4 border border-indigo-600 rounded-lg p-4 mb-4">
-          <p className="text-3xl font-bold tracking-tight text-gray-900">
+        <div className="flex flex-col gap-4 rounded-lg mb-4">
+          <p className="text-3xl font-bold tracking-tight text-gray-700">
             Actions
           </p>
           <div className="flex gap-2">
-            <div className="flex flex-col gap-2 border border-indigo-300 rounded-md p-4">
+            <div className="flex flex-col gap-2 border border-indigo-600 rounded-md p-4">
               <div>Avatars</div>
               <div className="flex gap-4">
                 <button className="btn" onClick={createAvatar}>
@@ -80,7 +86,7 @@ const GameRoom = () => {
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-2 border border-indigo-300 rounded-md p-4">
+            <div className="flex flex-col gap-2 border border-indigo-600 rounded-md p-4">
               <div>Equipment</div>
               <div className="flex gap-4">
                 <button className="btn" onClick={createEquipment}>
@@ -88,7 +94,7 @@ const GameRoom = () => {
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-2 border border-indigo-300 rounded-md p-4">
+            <div className="flex flex-col gap-2 border border-indigo-600 rounded-md p-4">
               <div>Battle</div>
               <div className="flex gap-4">
                 <button
@@ -108,10 +114,12 @@ const GameRoom = () => {
               {myItems.map((item) => {
                 return (
                   <Draggable id={item.id} item={item} key={item.id}>
-                    <div className="flex flex-col items-center justify-center">
-                      <img width={80} height={80} src={item.image} />
-                      <div className="text-sm text-gray-900">{item.name}</div>
-                    </div>
+                    <Image
+                      fill
+                      className="object-contain p-2"
+                      src={item.image}
+                      alt={'item'}
+                    />
                   </Draggable>
                 );
               })}
@@ -129,6 +137,11 @@ const GameRoom = () => {
       <BattleModal
         open={battleModalOpen}
         onClose={() => setBattleModalOpen(false)}
+      />
+      <BumpModal
+        battleDetails={battleDetails}
+        open={battleResultsModalOpen}
+        onClose={() => setBattleResultsModalOpen(false)}
       />
     </div>
   );

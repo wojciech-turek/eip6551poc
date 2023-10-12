@@ -18,43 +18,31 @@ contract BGEquipment is
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
-    mapping(uint256 => string) public names;
     mapping(address => uint256[]) private ownedTokens;
 
     event EquipmentCreated(
         address indexed owner,
         uint256 indexed tokenId,
-        string tokenURI,
-        string name
+        string tokenURI
     );
     event EquipmentTransferred(
         address indexed from,
         address indexed to,
         uint256 indexed tokenId,
-        string tokenURI,
-        string name
+        string tokenURI
     );
 
     constructor() ERC721('BGEquipment', 'BGE') {
         _tokenIdCounter.increment();
     }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return 'ipfs://';
-    }
-
-    function safeMint(
-        address to,
-        string memory uri,
-        string calldata name
-    ) public {
+    function safeMint(address to, string memory uri) public {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-        names[tokenId] = name;
         ownedTokens[to].push(tokenId);
-        emit EquipmentCreated(to, tokenId, tokenURI(tokenId), name);
+        emit EquipmentCreated(to, tokenId, tokenURI(tokenId));
     }
 
     function getOwnedTokens(
@@ -93,13 +81,7 @@ contract BGEquipment is
         super._afterTokenTransfer(from, to, tokenId, batchSize);
         removeOwnedToken(from, tokenId);
         ownedTokens[to].push(tokenId);
-        emit EquipmentTransferred(
-            from,
-            to,
-            tokenId,
-            tokenURI(tokenId),
-            names[tokenId]
-        );
+        emit EquipmentTransferred(from, to, tokenId, tokenURI(tokenId));
     }
 
     function _burn(

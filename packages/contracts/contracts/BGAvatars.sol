@@ -38,10 +38,6 @@ contract BGAvatars is
         registry = IERC6551Registry(_registry);
     }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return 'ipfs://';
-    }
-
     function safeMint(address to, string memory uri) public {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();

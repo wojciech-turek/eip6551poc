@@ -3,9 +3,9 @@ import NavBar from './NavBar';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <div>
+    <div className="overflow-auto min-h-screen h-full bg-gradient-to-r from-sky-500 to-sky-500">
       <NavBar />
-      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{children}</div>
+      {children}
     </div>
   );
 };

@@ -1,17 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "./interfaces/IERC6551Account.sol";
-import "./interfaces/IERC6551Executable.sol";
+import '@openzeppelin/contracts/utils/introspection/IERC165.sol';
+import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import '@openzeppelin/contracts/interfaces/IERC1271.sol';
+import '@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol';
+import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
+import '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol';
+import './interfaces/IERC6551Account.sol';
+import './interfaces/IERC6551Executable.sol';
+import './interfaces/IERC6551Custom.sol';
 
-contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executable, IERC721Receiver, IERC1155Receiver {
+contract ERC6551Account is
+    IERC165,
+    IERC1271,
+    IERC6551Custom,
+    IERC6551Account,
+    IERC6551Executable,
+    IERC721Receiver,
+    IERC1155Receiver
+{
     uint256 public state;
+    uint256 public experience;
 
     receive() external payable {}
 
@@ -21,8 +31,8 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executabl
         bytes calldata data,
         uint256 operation
     ) external payable returns (bytes memory result) {
-        require(_isValidSigner(msg.sender), "Invalid signer");
-        require(operation == 0, "Only call operations are supported");
+        require(_isValidSigner(msg.sender), 'Invalid signer');
+        require(operation == 0, 'Only call operations are supported');
 
         ++state;
 
@@ -36,7 +46,10 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executabl
         }
     }
 
-    function isValidSigner(address signer, bytes calldata) external view returns (bytes4) {
+    function isValidSigner(
+        address signer,
+        bytes calldata
+    ) external view returns (bytes4) {
         if (_isValidSigner(signer)) {
             return IERC6551Account.isValidSigner.selector;
         }
@@ -44,17 +57,26 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executabl
         return bytes4(0);
     }
 
-    function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4 magicValue) {
-        bool isValid = SignatureChecker.isValidSignatureNow(owner(), hash, signature);
+    function isValidSignature(
+        bytes32 hash,
+        bytes memory signature
+    ) external view returns (bytes4 magicValue) {
+        bool isValid = SignatureChecker.isValidSignatureNow(
+            owner(),
+            hash,
+            signature
+        );
 
         if (isValid) {
             return IERC1271.isValidSignature.selector;
         }
 
-        return "";
+        return '';
     }
 
-    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure returns (bool) {
         return (interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC6551Account).interfaceId ||
             interfaceId == type(IERC6551Executable).interfaceId);
@@ -81,14 +103,29 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executabl
         return signer == owner();
     }
 
+    function increaseExperience(uint256 amount) external {
+        experience += amount;
+    }
+
     /// @dev Allows ERC-721 tokens to be received so long as they do not cause an ownership cycle.
     /// This function can be overriden.
-    function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) public pure override returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
     /// @dev Allows ERC-1155 tokens to be received. This function can be overriden.
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure override returns (bytes4) {
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public pure override returns (bytes4) {
         return this.onERC1155Received.selector;
     }
 

@@ -1,11 +1,10 @@
-import { BattleContractABI } from '@/constants/abi';
-import { battleContractAddress } from '@/constants/contracts';
 import { useContractWrite } from 'wagmi';
+import BattleContract from '@/constants/Battle.json';
 
 const useBattle = () => {
   const battleContract = {
-    address: battleContractAddress,
-    abi: BattleContractABI,
+    address: BattleContract.address as `0x${string}`,
+    abi: BattleContract.abi,
     chainId: 80001,
   };
 

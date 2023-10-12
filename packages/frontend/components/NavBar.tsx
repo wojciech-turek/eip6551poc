@@ -46,7 +46,7 @@ const NavBar = () => {
   };
 
   return (
-    <div className="bg-gray-800 relative z-30">
+    <div className="bg-gray-800 fixed top-0 w-full z-30 ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-end">
           {routes.map((route) => {

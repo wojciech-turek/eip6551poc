@@ -9,8 +9,8 @@ export function Droppable(props: any) {
     },
   });
   const style = {
-    borderRadius: 10,
-    border: isOver ? '1px solid #2507ce' : '1px solid #cdcdcd',
+    borderRadius: 8,
+    border: isOver ? '1px solid #07ce32' : '1px solid #2507ce',
   };
 
   return (
