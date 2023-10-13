@@ -19,7 +19,6 @@ const Champion = ({
   right?: boolean;
   image: string;
 }) => {
-  console.log(winner, right);
   return (
     <motion.div
       animate={{

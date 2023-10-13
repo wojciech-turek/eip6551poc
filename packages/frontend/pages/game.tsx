@@ -11,8 +11,10 @@ import BattleModal from '@/components/BattleModal';
 import BumpModal from '@/components/BumpModal';
 import useEventListener from '@/hooks/useEventListener';
 import { BattleDetailsContext } from './_app';
+import { useAccount } from 'wagmi';
 
 const GameRoom = () => {
+  const { address } = useAccount();
   const [transferModalOpen, setTransferModalOpen] = React.useState(false);
   const [battleModalOpen, setBattleModalOpen] = React.useState(false);
   const { battleDetails, battleResultsModalOpen, setBattleResultsModalOpen } =
@@ -111,18 +113,20 @@ const GameRoom = () => {
           <div className="p-4">
             <p className="text-lg text-blue-900 pb-2">My Unequipped Items</p>
             <div className="flex gap-4">
-              {myItems.map((item) => {
-                return (
-                  <Draggable id={item.id} item={item} key={item.id}>
-                    <Image
-                      fill
-                      className="object-contain p-2"
-                      src={item.image}
-                      alt={'item'}
-                    />
-                  </Draggable>
-                );
-              })}
+              {myItems
+                .filter((item) => item.owner === address)
+                .map((item) => {
+                  return (
+                    <Draggable id={item.id} item={item} key={item.id}>
+                      <Image
+                        fill
+                        className="object-contain p-2"
+                        src={item.image}
+                        alt={'item'}
+                      />
+                    </Draggable>
+                  );
+                })}
             </div>
           </div>
         </Droppable>

@@ -1,4 +1,3 @@
-import { tokenId } from './../../contracts/contracts/scripts/tokenId';
 import { useAccount, useContractEvent } from 'wagmi';
 import BGAvatars from '@/constants/BGAvatars.json';
 import BGEquipment from '@/constants/BGEquipment.json';
@@ -95,12 +94,7 @@ const useEventListener = () => {
         (logItem) => logItem.eventName === 'EquipmentCreated'
       );
       if (!createdEvents.length) return;
-      // if none of the events are for the current user, ignore
-      const myCreatedEquipment = createdEvents.filter(
-        (event) => event.args.owner === address
-      );
-      if (!myCreatedEquipment.length) return;
-      myCreatedEquipment.forEach((createdEvent) => {
+      createdEvents.forEach((createdEvent) => {
         console.log('Equipment Created', {
           owner: createdEvent.args.owner,
           tokenId: Number(createdEvent.args.tokenId),

@@ -15,15 +15,21 @@ const TransferModal = ({ open, onClose }: Props) => {
   const [myAvatars, setMyAvatars] = React.useState<Avatar[]>([]);
   const [recipientWallet, setRecipientWallet] = React.useState<string>('');
 
-  const [avatarId, setAvatarId] = React.useState<number>(0);
+  const [selectedAvatarId, setSelectedAvatarId] = React.useState<number>(0);
 
   useEffect(() => {
     const myAvatars = avatars.filter((avatar) => avatar.owner === address);
     setMyAvatars(myAvatars);
   }, [avatars, address]);
 
+  useEffect(() => {
+    setSelectedAvatarId(0);
+    setRecipientWallet('');
+  }, [open]);
+
   const handleAvatarTransfer = () => {
-    transferAvatar(recipientWallet, avatarId);
+    if (!selectedAvatarId || !recipientWallet) return;
+    transferAvatar(recipientWallet, selectedAvatarId);
     onClose();
   };
 
@@ -49,10 +55,12 @@ const TransferModal = ({ open, onClose }: Props) => {
         <select
           id="location"
           name="location"
-          value={avatarId}
-          onChange={(e) => setAvatarId(parseInt(e.target.value))}
+          onChange={(e) => setSelectedAvatarId(Number(e.target.value))}
           className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300  sm:text-sm sm:leading-6"
         >
+          <option value="" disabled selected>
+            Select your avatar Id
+          </option>
           {myAvatars.map((avatar) => (
             <option key={avatar.id} value={avatar.id}>
               {avatar.id}

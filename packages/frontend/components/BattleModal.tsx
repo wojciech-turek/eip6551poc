@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import Modal from './Modal';
-import useAvatars, { Avatar } from '@/hooks/useAvatars';
+import useAvatars from '@/hooks/useAvatars';
 import { useAccount } from 'wagmi';
 import { classNames } from '@/utils/classNames';
 import useBattle from '@/hooks/useBattle';
 import { zeroAddress } from 'viem';
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -15,29 +14,19 @@ const BattleModal = ({ open, onClose }: Props) => {
   const { startBattle } = useBattle();
   const { address } = useAccount();
   const { avatars } = useAvatars();
-  const [myAvatars, setMyAvatars] = React.useState<Avatar[]>([]);
-  const [enemyAvatars, setEnemyAvatars] = React.useState<Avatar[]>([]);
-  const [mySelectedAvatarId, setMySelectedAvatarId] = React.useState<number>(0);
-  const [enemySelectedAvatarId, setEnemySelectedAvatarId] =
-    React.useState<number>(0);
-
-  useEffect(() => {
-    const myAvatars = avatars.filter((avatar) => avatar.owner === address);
-    const enemyAvatars = avatars.filter(
-      (avatar) => avatar.owner !== zeroAddress && avatar.owner !== address
-    );
-    setEnemyAvatars(enemyAvatars);
-    setMyAvatars(myAvatars);
-    setMySelectedAvatarId(myAvatars[0]?.id);
-    setEnemySelectedAvatarId(enemyAvatars[0]?.id);
-  }, [avatars, address]);
+  const [mySelectedAvatarId, setMySelectedAvatarId] = React.useState(0);
+  const [enemySelectedAvatarId, setEnemySelectedAvatarId] = React.useState(0);
 
   const handleStartBattle = () => {
-    if (mySelectedAvatarId && enemySelectedAvatarId) {
-      startBattle(mySelectedAvatarId, enemySelectedAvatarId);
-      onClose();
-    }
+    if (!mySelectedAvatarId || !enemySelectedAvatarId) return;
+    startBattle(mySelectedAvatarId, enemySelectedAvatarId);
+    onClose();
   };
+
+  useEffect(() => {
+    setMySelectedAvatarId(0);
+    setEnemySelectedAvatarId(0);
+  }, [open]);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -55,30 +44,41 @@ const BattleModal = ({ open, onClose }: Props) => {
           My Avatar ID
         </label>
         <select
-          value={mySelectedAvatarId}
-          onChange={(e) => setMySelectedAvatarId(parseInt(e.target.value))}
+          onChange={(e) => setMySelectedAvatarId(Number(e.target.value))}
           className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300  sm:text-sm sm:leading-6"
         >
-          {myAvatars.map((avatar) => (
-            <option key={avatar.id} value={avatar.id}>
-              {avatar.id}
-            </option>
-          ))}
+          <option value="" disabled selected>
+            Select your avatar Id
+          </option>
+          {avatars
+            .filter((avatar) => avatar.owner === address)
+            .map((avatar) => (
+              <option key={avatar.id} value={avatar.id}>
+                {avatar.id}
+              </option>
+            ))}
         </select>
         {/* Enemy Select */}
         <label className="block text-sm font-medium leading-6 text-gray-600">
           Enemy Avatar ID
         </label>
         <select
-          value={enemySelectedAvatarId}
-          onChange={(e) => setEnemySelectedAvatarId(parseInt(e.target.value))}
+          onChange={(e) => setEnemySelectedAvatarId(Number(e.target.value))}
           className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300  sm:text-sm sm:leading-6"
         >
-          {enemyAvatars.map((avatar) => (
-            <option key={avatar.id} value={avatar.id}>
-              {avatar.id}
-            </option>
-          ))}
+          <option value="" disabled selected>
+            Select enemy avatar Id
+          </option>
+          {avatars
+            .filter(
+              (avatar) =>
+                avatar.owner !== address && avatar.owner !== zeroAddress
+            )
+            .map((avatar) => (
+              <option key={avatar.id} value={avatar.id}>
+                {avatar.id}
+              </option>
+            ))}
         </select>
         <button
           onClick={handleStartBattle}
