@@ -2,19 +2,28 @@ import Layout from '@/components/Layout';
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { polygonMumbai } from 'wagmi/chains';
-import { WagmiConfig, createConfig } from 'wagmi';
-import { createPublicClient, http } from 'viem';
+import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import { DndContext } from '@dnd-kit/core';
 import { ReactNode, createContext, useState } from 'react';
 import { Avatar } from '@/hooks/useAvatars';
 import { Equipment } from '@/hooks/useEquipment';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [polygonMumbai],
+  [
+    alchemyProvider({ apiKey: 'Rr2KU0W5MgrAwZoIjL73ILY4pZtl-Slq' }),
+    publicProvider(),
+  ]
+);
 
 const config = createConfig({
   autoConnect: true,
-  publicClient: createPublicClient({
-    chain: polygonMumbai,
-    transport: http('https://rpc-mumbai.maticvigil.com'),
-  }),
+  connectors: [new MetaMaskConnector({ chains })],
+  publicClient,
+  webSocketPublicClient,
 });
 
 type IAvatarsContext = {

@@ -65,7 +65,7 @@ const GameRoom = () => {
     }
   };
   return (
-    <div className="relative mx-auto mt-32 max-w-7xl sm:py-6 lg:py-16 sm:px-6 lg:px-8 bg-white rounded-md bg-opacity-70">
+    <div className="relative mx-auto mt-32 max-w-7xl sm:py-6 lg:py-16 sm:px-6 lg:px-8 bg-white rounded-md">
       <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         <div className="flex flex-col gap-4 rounded-lg mb-4">
           <p className="text-3xl font-bold tracking-tight text-gray-700">

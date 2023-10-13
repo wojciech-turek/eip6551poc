@@ -1,3 +1,4 @@
+import { tokenId } from './../../contracts/contracts/scripts/tokenId';
 import { useAccount, useContractEvent } from 'wagmi';
 import BGAvatars from '@/constants/BGAvatars.json';
 import BGEquipment from '@/constants/BGEquipment.json';
@@ -247,15 +248,16 @@ const useEventListener = () => {
         console.log('Avatar Transfer', {
           from: transferEvent.args.from,
           to: transferEvent.args.to,
+          tokenId: Number(transferEvent.args.tokenId),
         });
         setAvatars((prev) => {
-          const avatarIndex = prev.findIndex(
-            (a) => a.owner === transferEvent.args.from
+          const index = prev.findIndex(
+            (avatar) => avatar.id === Number(transferEvent.args.tokenId)
           );
-          if (avatarIndex === -1) return prev;
+          // update the owner of the avatar
           const newAvatars = [...prev];
-          newAvatars[avatarIndex] = {
-            ...newAvatars[avatarIndex],
+          newAvatars[index] = {
+            ...newAvatars[index],
             owner: transferEvent.args.to,
           };
           return newAvatars;

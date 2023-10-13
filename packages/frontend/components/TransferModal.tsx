@@ -20,7 +20,7 @@ const TransferModal = ({ open, onClose }: Props) => {
   useEffect(() => {
     const myAvatars = avatars.filter((avatar) => avatar.owner === address);
     setMyAvatars(myAvatars);
-  }, [address]);
+  }, [avatars, address]);
 
   const handleAvatarTransfer = () => {
     transferAvatar(recipientWallet, avatarId);
