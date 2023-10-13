@@ -1,6 +1,6 @@
 import BGEquipment from '@/constants/BGEquipment.json';
 import { EquipmentContext } from '@/pages/_app';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useAccount, useContractWrite } from 'wagmi';
 
 let items: string[] = [

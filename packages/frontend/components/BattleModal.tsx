@@ -41,7 +41,7 @@ const BattleModal = ({ open, onClose }: Props) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <p className="text-lg tracking-wider text-gray-900">Transfer Avatar</p>
+      <p className="text-lg tracking-wider text-gray-900">Battle!</p>
       <div className="relative">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
           <div className="w-full border-t border-gray-300" />

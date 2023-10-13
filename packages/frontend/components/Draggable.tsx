@@ -13,7 +13,7 @@ export function Draggable(props: any) {
   const style = {
     // Outputs `translate3d(x, y, 0)`
     transform: CSS.Translate.toString(transform),
-    zIndex: 999,
+    zIndex: 9,
   };
 
   return (
