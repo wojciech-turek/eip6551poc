@@ -20,7 +20,7 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
         .map((avatar) => (
           <div
             className={classNames(
-              avatar.owner === address ? 'bg-green-100' : 'bg-orange-100',
+              avatar.owner === address ? 'bg-green-100' : 'bg-white',
               ' rounded-lg relative border border-gray-400 shadow-sm'
             )}
             key={avatar.id}
