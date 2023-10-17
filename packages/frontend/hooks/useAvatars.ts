@@ -31,6 +31,7 @@ export type Avatar = {
   image: string;
   experience: number;
   itemsOwned: ItemOwned[];
+  error: string;
 };
 
 export type ItemOwned = {
@@ -41,7 +42,7 @@ export type ItemOwned = {
 };
 
 const useAvatars = () => {
-  const { avatars } = useContext(AvatarsContext);
+  const { avatars, setAvatars } = useContext(AvatarsContext);
   const [activeAvatar, setActiveAvatar] = useState<Avatar | null>(null);
   const { address } = useAccount();
 
@@ -75,6 +76,28 @@ const useAvatars = () => {
     if (!activeAvatar) return;
     if (!address) return;
     if (!unequip) return;
+    // check if account owns the account
+    const avatarIndex = avatars.findIndex((a) => a.id === activeAvatar.id);
+    const isOwner = avatars[avatarIndex].owner === address;
+    if (!isOwner) {
+      setAvatars((prev) => {
+        const newAvatars = [...prev];
+        newAvatars[avatarIndex] = {
+          ...newAvatars[avatarIndex],
+          error: 'You do not own this avatar',
+        };
+        return newAvatars;
+      });
+      return;
+    }
+    // clear all errors from all avatars
+    setAvatars((prev) => {
+      const newAvatars = [...prev];
+      newAvatars.forEach((avatar) => {
+        avatar.error = '';
+      });
+      return newAvatars;
+    });
     await unequip({
       args: [
         BGEquipment.address,
@@ -103,6 +126,14 @@ const useAvatars = () => {
   const transferAvatar = (to: string, id: number) => {
     if (!address) return;
     if (!transfer) return;
+    // clear all errors from all avatars
+    setAvatars((prev) => {
+      const newAvatars = [...prev];
+      newAvatars.forEach((avatar) => {
+        avatar.error = '';
+      });
+      return newAvatars;
+    });
     transfer({
       args: [address, to, id],
     });
@@ -117,6 +148,29 @@ const useAvatars = () => {
   const transferEquipment = (from: string, to: string, itemId: number) => {
     if (!address) return;
     if (!transferItem) return;
+    // check if account owns the account
+    const avatarIndex = avatars.findIndex((a) => a.account === from);
+    console.log(avatarIndex);
+    const isOwner = avatars[avatarIndex].owner === address;
+    if (!isOwner) {
+      setAvatars((prev) => {
+        const newAvatars = [...prev];
+        newAvatars[avatarIndex] = {
+          ...newAvatars[avatarIndex],
+          error: 'You do not own this avatar',
+        };
+        return newAvatars;
+      });
+      return;
+    }
+    // clear all errors from all avatars
+    setAvatars((prev) => {
+      const newAvatars = [...prev];
+      newAvatars.forEach((avatar) => {
+        avatar.error = '';
+      });
+      return newAvatars;
+    });
     transferItem({
       args: [
         BGEquipment.address,

@@ -1,4 +1,4 @@
-import { useAccount, useContractEvent } from 'wagmi';
+import { useContractEvent } from 'wagmi';
 import BGAvatars from '@/constants/BGAvatars.json';
 import BGEquipment from '@/constants/BGEquipment.json';
 import Battle from '@/constants/Battle.json';
@@ -15,7 +15,6 @@ const useEventListener = () => {
   const { setMyItems } = useContext(EquipmentContext);
   const { setBattleResultsModalOpen, setBattleDetails } =
     useContext(BattleDetailsContext);
-  const { address } = useAccount();
 
   const avatarContract = {
     address: BGAvatars.address as `0x${string}`,
@@ -283,6 +282,7 @@ const useEventListener = () => {
             image: createdEvent.args.tokenURI,
             itemsOwned: [],
             experience: 0,
+            error: '',
           },
         ]);
       }

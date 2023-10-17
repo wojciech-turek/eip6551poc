@@ -64,7 +64,10 @@ const PlayerCard = ({ avatars }: { avatars: Avatar[] }) => {
                 <div className="mt-1 border-t border-gray-200"></div>
                 <div className="mt-1 text-sm text-gray-500 py-4">
                   Items Owned
+                  <p className="text-red-500 text-sm">{avatar.error}</p>
                 </div>
+                {/* Error */}
+
                 <Droppable id={avatar.id} avatar={avatar}>
                   {avatar.itemsOwned.length > 0 ? (
                     <div className="grid grid-cols-2 gap-2 py-2 px-8">
