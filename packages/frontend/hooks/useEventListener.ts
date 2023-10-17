@@ -141,26 +141,16 @@ const useEventListener = () => {
           tokenURI: transferEvent.args.tokenURI,
         });
         setMyItems((prev) => {
-          if (transferEvent.args.from === address) {
-            const index = prev.findIndex(
-              (item) => item.id === Number(transferEvent.args.tokenId)
-            );
-            if (index === -1) return prev;
-            const newItems = [...prev];
-            newItems.splice(index, 1);
-            return newItems;
-          }
-          if (transferEvent.args.to === address) {
-            return [
-              ...prev,
-              {
-                owner: transferEvent.args.to,
-                id: Number(transferEvent.args.tokenId),
-                image: transferEvent.args.tokenURI,
-              },
-            ];
-          }
-          return prev;
+          const index = prev.findIndex(
+            (item) => item.id === Number(transferEvent.args.tokenId)
+          );
+          if (index === -1) return prev;
+          const newItems = [...prev];
+          newItems[index] = {
+            ...newItems[index],
+            owner: transferEvent.args.to,
+          };
+          return newItems;
         });
       });
     },
